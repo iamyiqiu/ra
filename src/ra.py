@@ -12,7 +12,6 @@ logging.basicConfig(
     handlers=[
         logging.StreamHandler(sys.stdout)
     ])
-logging.info(f"Start experiments")
 
 class RoboAdvisor:
     """
@@ -87,6 +86,9 @@ class RoboAdvisor:
 
         self.a[self.T] = RGI((Y0_space, Y_space, Z0_space, Z1_space, xi_space), np.ones((2, 2, Z0_space.size, Z1_space.size, xi_space.size)), bounds_error=False, fill_value=None)
         self.b[self.T] = RGI((Y0_space, Y_space, Z0_space, Z1_space, xi_space), np.ones((2, 2, Z0_space.size, Z1_space.size, xi_space.size)), bounds_error=False, fill_value=None)
+
+        if verbose:
+            logging.info(f"Start experiments")
 
         for n in reversed(range(self.T)):
             if verbose:
