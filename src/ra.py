@@ -185,7 +185,13 @@ class RoboAdvisor:
     calc_policy: whether to calculate the optimal policy
     verbose: whether to print the progress
     """
-    def run(self, x0, y0, gamma_0, calc_policy=True, verbose=True):
+    def run(self, x0, y0, gamma_0, calc_policy=True, custom_schedule=None, verbose=True):
+        if custom_schedule is not None and calc_policy:
+            raise NotImplementedError("Backwards induction only compatible with uniform schedule for now.")
+
+        if custom_schedule is not None:
+            self.tau = custom_schedule
+
         self.x0 = x0
         self.y0 = y0
         self.gamma_0 = gamma_0
@@ -243,7 +249,7 @@ class RoboAdvisor:
                 self.gamma_C[i] = self.gamma_Y[i] * self.eta[i] * self.gamma_id[i]
                 
                 if self.tau[i] == i: # interaction time
-                    self.gamma_Z[i] = np.exp(-self.beta/self.phi * sum([self.Z[k+1] - self.mu[k+1] for k in range(i - self.phi, i)]))
+                    self.gamma_Z[i] = np.exp(-self.beta/(i-self.tau[i-1]) * sum([self.Z[k+1] - self.mu[k+1] for k in range(self.tau[i-1], i)]))
                     self.xi[i] = self.gamma_C[i] * self.gamma_Z[i]
                 else:
                     self.xi[i] = self.xi[self.tau[i]]
